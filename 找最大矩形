@@ -1,0 +1,42 @@
+import cv2
+import numpy as np
+from capture_first_picture import video
+
+#灰階
+img_gray = cv2.cvtColor(cv2.imread(video), cv2.COLOR_BGR2GRAY)  # 轉成灰階
+
+#二值化
+#img_thres = cv2.threshold(img_gray, 110, 255,
+#               cv2.THRESH_BINARY)[1]
+
+#高斯模糊
+img_gauss = cv2.GaussianBlur(img_gray, (10,10), 0)
+# ksize 指定區域單位 ( 必須是大於 1 的奇數 )
+# (10,10): X方向標準差，預設 0
+#0:Y 方向標準差，預設 0
+
+#中值濾波
+#img_median = cv2.medianBlur(img_thres, 1)
+
+#邊緣模糊
+img_canny = cv2.Canny(img_gauss,100 ,150 )
+
+#kernal:4*4，元素皆為1，類型為uint8的數組
+kernel = np.ones((4,4),np.uint8)
+
+#開運算，先腐蝕後膨脹
+#平滑物體邊界
+img_mor = cv2.morphologyEx(img_canny, cv2.MORPH_OPEN, kernel)
+
+
+# 二值化，尋找輪廓
+contours, _ = cv2.findContours(img_mor, cv2.RETR_EXTERNAL,
+                               cv2.CHAIN_APPROX_SIMPLE)
+
+
+# No contour was found
+if not contours:
+    printf("no countour")
+
+    
+
